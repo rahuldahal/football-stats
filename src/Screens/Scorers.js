@@ -7,18 +7,16 @@ import LocalStorage from "../utils/localStorage";
 import { showLoader, hideLoader } from "../utils/preloader";
 import TweenLite from "gsap";
 import TextWithIcon from "../Components/TextWithIcon";
-import Nav from "../Components/Nav/Nav";
 import changeLeagueTheme from "../utils/changeLeagueTheme";
 
 const leagueDetails = new LeagueDetails();
 
-const Scorers = () => {
+const Scorers = ({ shortNames }) => {
   const { league } = useParams();
   const leagueId = leagueDetails.getId(league);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [scorers, setScorers] = useState([]);
-  const [shortNames, setShortNames] = useState({});
   const [selectedTeam, setSelectedTeam] = useState(null);
 
   useEffect(() => {
@@ -41,34 +39,18 @@ const Scorers = () => {
 
   useEffect(() => {
     setScorers(null);
-    changeLeagueTheme(league);
-
-    fetchData(null, leagueId)
-      .then((leagueDetails) => {
-        return LocalStorage.prototype.isTeamNamesOnLocalStorage(
-          leagueId,
-          leagueDetails.currentSeason.startDate
-        );
-      })
-      .then((response) => {
-        setShortNames({ league: leagueId, data: response });
-      });
+    fetchData("scorers", leagueId).then(
+      (result) => {
+        console.log(result);
+        setScorers(result.scorers);
+        setIsLoaded(true);
+      },
+      (error) => {
+        setIsLoaded(true);
+        setError(error);
+      }
+    );
   }, [league]);
-
-  useEffect(() => {
-    shortNames.league &&
-      fetchData("scorers", leagueId).then(
-        (result) => {
-          console.log(result);
-          setScorers(result.scorers);
-          setIsLoaded(true);
-        },
-        (error) => {
-          setIsLoaded(true);
-          setError(error);
-        }
-      );
-  }, [shortNames]);
 
   useEffect(() => {
     if (shortNames.league !== leagueId) {

@@ -4,7 +4,6 @@ import { Route, BrowserRouter as Router } from "react-router-dom";
 import Landing from "./Screens/Landing";
 import Container from "./Components/Container";
 import Loader from "./Components/Loader";
-import { hideLoader } from "./utils/preloader";
 
 // CSS and SCSS
 

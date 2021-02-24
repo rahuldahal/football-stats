@@ -9,7 +9,6 @@ import TeamInfo from "./TeamInfo";
 import { TweenLite, Power3 } from "gsap";
 import { Tween } from "gsap/gsap-core";
 import TextWithIcon from "../Components/TextWithIcon";
-import Nav from "../Components/Nav/Nav";
 import changeLeagueTheme from "../utils/changeLeagueTheme";
 
 const leagueDetails = new LeagueDetails();
@@ -30,14 +29,12 @@ function Countdown({ utcDate, status, fullTime }) {
   );
 }
 
-const Matches = () => {
+const Matches = ({ matchDay, shortNames }) => {
   const { league } = useParams();
   const leagueId = leagueDetails.getId(league);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [matches, setMatches] = useState([]);
-  const [matchDay, setMatchDay] = useState(null);
-  const [shortNames, setShortNames] = useState({});
   const [selectedTeam, setSelectedTeam] = useState(null);
 
   useEffect(() => {
@@ -75,28 +72,6 @@ const Matches = () => {
       });
     }
   }, [isLoaded]);
-
-  useEffect(() => {
-    setMatchDay(null);
-    setShortNames({});
-    changeLeagueTheme(league);
-  }, [league]);
-
-  useEffect(() => {
-    matchDay === null &&
-      fetchData(null, leagueId)
-        .then((leagueDetails) => {
-          setMatchDay(leagueDetails.currentSeason.currentMatchday);
-          return LocalStorage.prototype.isTeamNamesOnLocalStorage(
-            leagueId,
-            leagueDetails.currentSeason.startDate
-          );
-        })
-        .then((response) => {
-          setShortNames({ league: leagueId, data: response });
-        })
-        .catch((err) => console.log(err));
-  }, [matchDay]);
 
   useEffect(() => {
     shortNames.league &&

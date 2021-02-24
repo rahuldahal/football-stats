@@ -6,19 +6,17 @@ import { fetchData } from "../utils/fetchData";
 import LocalStorage from "../utils/localStorage";
 import { showLoader, hideLoader } from "../utils/preloader";
 import TweenLite from "gsap";
-import Nav from "../Components/Nav/Nav";
 import changeLeagueTheme from "../utils/changeLeagueTheme";
 
 const leagueDetails = new LeagueDetails();
 
-const Standings = () => {
+const Standings = ({ matchDay, shortNames }) => {
   const { league } = useParams();
   const leagueId = leagueDetails.getId(league);
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [standings, setStandings] = useState([]);
   const [standingsType, setStandingsType] = useState("TOTAL");
-  const [shortNames, setShortNames] = useState({});
   const [selectedTeam, setSelectedTeam] = useState(null);
 
   useEffect(() => {
@@ -39,22 +37,6 @@ const Standings = () => {
   }, [isLoaded]);
 
   useEffect(() => {
-    setStandings(null);
-    changeLeagueTheme(league);
-
-    fetchData(null, leagueId)
-      .then((leagueDetails) => {
-        return LocalStorage.prototype.isTeamNamesOnLocalStorage(
-          leagueId,
-          leagueDetails.currentSeason.startDate
-        );
-      })
-      .then((response) => {
-        setShortNames({ league: leagueId, data: response });
-      });
-  }, [league]);
-
-  useEffect(() => {
     shortNames.league &&
       fetchData("standings", leagueId).then(
         (result) => {
@@ -66,7 +48,7 @@ const Standings = () => {
           setError(error);
         }
       );
-  }, [shortNames]);
+  }, [league]);
 
   useEffect(() => {
     if (shortNames.league !== leagueId) {
@@ -82,6 +64,7 @@ const Standings = () => {
     showLoader();
     return null;
   } else {
+    console.log(matchDay);
     let standingsTable;
     switch (standingsType) {
       case "HOME":
